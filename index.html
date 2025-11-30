@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<script>
+       // *** LÓGICA DE VERIFICACIÓN AVANZADA (CLIENTE-SIDE) ***
+       let _rA = 0; // Respuesta Correcta (Obscured Answer)
+       let intentos = 0; // Contador de intentos fallidos
+       function generateChallenge() {
+           // Generar números aleatorios para mayor complejidad
+           const num1 = Math.floor(Math.random() * 50) + 10; // 10-59
+           const num2 = Math.floor(Math.random() * 9) + 2;   // 2-10
+           const num3 = Math.floor(Math.random() * 5) + 1;   // 1-5
+           // Elegir una operación más compleja
+           const operation = Math.floor(Math.random() * 3);
+           let questionText = "";
+           let correctAnswer = 0;
+           switch (operation) {
+               case 0:
+                   questionText = `¿Cuánto es ${num1} multiplicado por ${num2} más ${num3}?`;
+                   correctAnswer = (num1 * num2) + num3;
+                   break;
+               case 1:
+                   questionText = `Calcula: (${num1 + num3}) menos ${num2} por ${num3}`;
+                   correctAnswer = (num1 + num3) - (num2 * num3);
+                   break;
+               case 2:
+                   const squareNum = num1 * num1;
+                   questionText = `¿Cuál es la raíz cuadrada de ${squareNum} más ${num2}?`;
+                   correctAnswer = Math.sqrt(squareNum) + num2;
+                   break;
+               default:
+                   questionText = `Suma ${num1} más ${num2}`;
+                   correctAnswer = num1 + num2;
+           }
+           // Almacenar la respuesta
+           _rA = correctAnswer;
+           // Mostrar la pregunta
+           document.getElementById("math-question").textContent = questionText;
+           document.getElementById('user-answer').value = ''; // Limpia el input
+       }
+       function checkAnswer() {
+           const userAnswer = document.getElementById("user-answer").value;
+           const messageElement = document.getElementById("message");
+           if (userAnswer === '') {
+               messageElement.innerHTML = '<span class="error">Ingresa un número.</span>';
+               return;
+           }
+           // Compara la respuesta del usuario (convertida a número) con la respuesta almacenada
+           if (parseInt(userAnswer) === _rA) {
+               // CORRECTO: Redirección inmediata
+               messageElement.innerHTML = '';
+               window.location.href = 'https://www.google.com/';
+           } else {
+               // INCORRECTO: Muestra error y aumenta contador
+               intentos++;
+               messageElement.innerHTML = '<span class="error">Respuesta incorrecta.</span>';
+               document.getElementById('user-answer').value = '';
+               // Generar un nuevo desafío si se falla 3 veces
+               if (intentos >= 3) {
+                   messageElement.innerHTML = '<span class="error">Demasiados intentos. Nueva pregunta.</span>';
+                   setTimeout(generateChallenge, 1000); // Espera 1 segundo para generar la nueva pregunta
+                   intentos = 0;
+               }
+           }
+       }
+       // Ejecutar la generación del desafío al cargar la página
+       document.addEventListener("DOMContentLoaded", generateChallenge);
+</script>
+</body>
+</html>
